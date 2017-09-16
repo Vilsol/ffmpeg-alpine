@@ -1,8 +1,6 @@
-FROM alpine as build
+FROM alpine
 
 RUN echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
-
-RUN cat /etc/apk/repositories
 
 RUN apk add --no-cache \
 	autoconf \
@@ -27,18 +25,16 @@ RUN apk add --no-cache \
 	libvpx-dev \
 	coreutils
 
-RUN mkdir ~/ffmpeg_sources
-
-RUN cd ~/ffmpeg_sources \
+RUN mkdir ~/ffmpeg_sources \
+	&& cd ~/ffmpeg_sources \
 	&& wget http://www.nasm.us/pub/nasm/releasebuilds/2.13.01/nasm-2.13.01.tar.bz2 \
 	&& tar xjvf nasm-2.13.01.tar.bz2 \
 	&& cd nasm-2.13.01 \
 	&& ./autogen.sh \
 	&& PATH="$HOME/bin:$PATH" ./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin" \
 	&& PATH="$HOME/bin:$PATH" make -j8 \
-	&& make install
-
-RUN cd ~/ffmpeg_sources \
+	&& make install \
+	&& cd ~/ffmpeg_sources \
 	&& wget http://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 \
 	&& tar xjvf ffmpeg-snapshot.tar.bz2 \
 	&& cd ffmpeg \
@@ -60,4 +56,6 @@ RUN cd ~/ffmpeg_sources \
 		--enable-nonfree \
 	&& PATH="$HOME/bin:$PATH" make -j8 \
 	&& make install \
-	&& hash -r
+	&& hash -r \
+	&& rm -rf ~/ffmpeg_sources \
+	&& rm -rf ~/ffmpeg_build
