@@ -1,31 +1,29 @@
 FROM alpine
 
-RUN echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
-
-RUN apk add --no-cache \
-	autoconf \
-	automake \
-	g++ \
-	make \
-	gcc \
-	libc-dev \
-	libtheora-dev \
-	libtool \
-	libvorbis-dev \
-	pkgconfig \
-	texinfo \
-	wget \
-	zlib-dev \
-	yasm \
-	x264-dev \
-	x265-dev \
-	fdk-aac-dev@testing \
-	lame-dev \
-	opus-dev \
-	libvpx-dev \
-	coreutils
-
-RUN mkdir ~/ffmpeg_sources \
+RUN echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
+	&& apk add --no-cache \
+		autoconf \
+		automake \
+		g++ \
+		make \
+		gcc \
+		libc-dev \
+		libtheora-dev \
+		libtool \
+		libvorbis-dev \
+		pkgconfig \
+		texinfo \
+		wget \
+		zlib-dev \
+		yasm \
+		x264-dev \
+		x265-dev \
+		fdk-aac-dev@testing \
+		lame-dev \
+		opus-dev \
+		libvpx-dev \
+		coreutils \
+	&& mkdir ~/ffmpeg_sources \
 	&& cd ~/ffmpeg_sources \
 	&& wget http://www.nasm.us/pub/nasm/releasebuilds/2.13.01/nasm-2.13.01.tar.bz2 \
 	&& tar xjvf nasm-2.13.01.tar.bz2 \
@@ -58,4 +56,26 @@ RUN mkdir ~/ffmpeg_sources \
 	&& make install \
 	&& hash -r \
 	&& rm -rf ~/ffmpeg_sources \
-	&& rm -rf ~/ffmpeg_build
+	&& rm -rf ~/ffmpeg_build \
+	&& apk del --no-cache \
+		autoconf \
+		automake \
+		g++ \
+		make \
+		gcc \
+		libc-dev \
+		libtheora-dev \
+		libtool \
+		libvorbis-dev \
+		pkgconfig \
+		texinfo \
+		wget \
+		zlib-dev \
+		yasm \
+		x264-dev \
+		x265-dev \
+		fdk-aac-dev@testing \
+		lame-dev \
+		opus-dev \
+		libvpx-dev \
+		coreutils
