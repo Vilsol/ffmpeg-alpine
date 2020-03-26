@@ -1,7 +1,6 @@
-FROM alpine
+FROM alpine:edge
 
-RUN echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
-	&& apk add --no-cache \
+RUN apk add --no-cache \
 		autoconf \
 		automake \
 		g++ \
@@ -18,20 +17,14 @@ RUN echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/ap
 		yasm \
 		x264-dev \
 		x265-dev \
-		fdk-aac-dev@testing \
+		fdk-aac-dev \
 		lame-dev \
 		opus-dev \
 		libvpx-dev \
 		coreutils \
+		nasm \
 	&& mkdir ~/ffmpeg_sources \
 	&& cd ~/ffmpeg_sources \
-	&& wget http://www.nasm.us/pub/nasm/releasebuilds/2.13.01/nasm-2.13.01.tar.bz2 \
-	&& tar xjvf nasm-2.13.01.tar.bz2 \
-	&& cd nasm-2.13.01 \
-	&& ./autogen.sh \
-	&& PATH="$HOME/bin:$PATH" ./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin" \
-	&& PATH="$HOME/bin:$PATH" make -j8 \
-	&& make install \
 	&& cd ~/ffmpeg_sources \
 	&& wget http://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 \
 	&& tar xjvf ffmpeg-snapshot.tar.bz2 \
@@ -52,6 +45,7 @@ RUN echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/ap
 		--enable-libx264 \
 		--enable-libx265 \
 		--enable-nonfree \
+		--disable-doc \
 	&& PATH="$HOME/bin:$PATH" make -j8 \
 	&& make install \
 	&& hash -r \
@@ -74,8 +68,9 @@ RUN echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/ap
 		yasm \
 		x264-dev \
 		x265-dev \
-		fdk-aac-dev@testing \
+		fdk-aac-dev \
 		lame-dev \
 		opus-dev \
 		libvpx-dev \
-		coreutils
+		coreutils \
+		nasm
