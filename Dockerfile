@@ -16,15 +16,24 @@ RUN apk add --no-cache \
 		zlib-dev \
 		yasm \
 		x264-dev \
-		x265-dev \
 		fdk-aac-dev \
 		lame-dev \
 		opus-dev \
 		libvpx-dev \
 		coreutils \
 		nasm \
+		bash \
+		cmake \
+		git \
+	&& git clone --depth=1 https://bitbucket.org/multicoreware/x265_git.git ~/x265_git \
+	&& cd ~/x265_git/build/linux \
+	&& bash multilib.sh \
+	&& cd 8bit \
+	&& make install \
+	&& cp *.so.* /usr/local/lib/ \
+	&& cd ~/ \
+	&& rm -rf ~/x265_git \
 	&& mkdir ~/ffmpeg_sources \
-	&& cd ~/ffmpeg_sources \
 	&& cd ~/ffmpeg_sources \
 	&& wget http://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 \
 	&& tar xjvf ffmpeg-snapshot.tar.bz2 \
@@ -67,10 +76,12 @@ RUN apk add --no-cache \
 		zlib-dev \
 		yasm \
 		x264-dev \
-		x265-dev \
 		fdk-aac-dev \
 		lame-dev \
 		opus-dev \
 		libvpx-dev \
 		coreutils \
-		nasm
+		nasm \
+		bash \
+		cmake \
+		git
