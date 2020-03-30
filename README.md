@@ -2,39 +2,44 @@
 
 Alpine container with ffmpeg compiled with:
 
-	--enable-gpl
-	--enable-libfdk-aac
-	--enable-libmp3lame
-	--enable-libopus
-	--enable-libtheora
-	--enable-libvorbis
-	--enable-libvpx
-	--enable-libx264
-	--enable-libx265
-	--enable-nonfree
+```
+--enable-gpl
+--enable-libfdk-aac
+--enable-libmp3lame
+--enable-libopus
+--enable-libtheora
+--enable-libvorbis
+--enable-libvpx
+--enable-libx264
+--enable-libx265
+--enable-nonfree
+```
 
 ## Usage
 
 Image meant to be used with multi stage builds as follows:
 
-	FROM vilsol/ffmpeg-alpine as build
+```Dockerfile
+FROM vilsol/ffmpeg-alpine as build
 
-	FROM alpine
+FROM alpine:edge
 
-	RUN echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
+# ffmpeg
+COPY --from=build /root/bin/ffmpeg /bin/ffmpeg
+COPY --from=build /root/bin/ffprobe /bin/ffprobe
 
-	RUN apk add --no-cache \
-		libtheora \
-		libvorbis \
-		x264-libs \
-		x265 \
-		fdk-aac@testing \
-		lame \
-		opus \
-		libvpx
+# x265
+COPY --from=build /usr/local/ /usr/local/
 
-	COPY --from=build /root/bin/ffmpeg /bin/ffmpeg
-	COPY --from=build /root/bin/ffprobe /bin/ffprobe
-	COPY --from=build /root/bin/ffserver /bin/ffserver
-	COPY --from=build /root/bin/nasm /bin/nasm
-	COPY --from=build /root/bin/ndisasm /bin/ndisasm
+RUN apk add --no-cache \
+	libtheora \
+	libvorbis \
+	x264-libs \
+	fdk-aac \
+	lame \
+	opus \
+	libvpx \
+	libstdc++ \
+	numactl \
+	nasm
+```

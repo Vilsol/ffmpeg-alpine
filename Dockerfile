@@ -1,6 +1,7 @@
-FROM alpine:edge
+FROM alpine:edge as build
 
-RUN apk add --no-cache \
+RUN set -x \
+	&& apk add --no-cache \
 		autoconf \
 		automake \
 		g++ \
@@ -25,18 +26,19 @@ RUN apk add --no-cache \
 		bash \
 		cmake \
 		git \
-	&& git clone --depth=1 https://bitbucket.org/multicoreware/x265_git.git ~/x265_git \
+		numactl-dev \
+	&& git clone --depth=1 --branch=3.3 https://bitbucket.org/multicoreware/x265_git.git ~/x265_git \
 	&& cd ~/x265_git/build/linux \
-	&& bash multilib.sh \
+	&& MAKEFLAGS="-j8" bash multilib.sh \
 	&& cd 8bit \
 	&& make install \
-	&& cp *.so.* /usr/local/lib/ \
+	&& cp libx265.so.* /usr/local/lib/ \
 	&& cd ~/ \
 	&& rm -rf ~/x265_git \
 	&& mkdir ~/ffmpeg_sources \
 	&& cd ~/ffmpeg_sources \
-	&& wget http://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 \
-	&& tar xjvf ffmpeg-snapshot.tar.bz2 \
+	&& wget -q http://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 \
+	&& tar xjf ffmpeg-snapshot.tar.bz2 \
 	&& cd ffmpeg \
 	&& PATH="$HOME/bin:$PATH" PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" ./configure \
 		--prefix="$HOME/ffmpeg_build" \
@@ -60,7 +62,8 @@ RUN apk add --no-cache \
 	&& hash -r \
 	&& rm -rf ~/ffmpeg_sources \
 	&& rm -rf ~/ffmpeg_build \
-	&& apk del --no-cache \
+	&& rm -rf /usr/local/include \
+	&& apk del \
 		autoconf \
 		automake \
 		g++ \
@@ -84,4 +87,5 @@ RUN apk add --no-cache \
 		nasm \
 		bash \
 		cmake \
-		git
+		git \
+		numactl-dev
